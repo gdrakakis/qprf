@@ -392,12 +392,13 @@ def RA_applicability(euclidean, manhattan, ensemble, name):
     
 
 @app.route('/pws/qprf', methods = ['POST'])
-def create_task_readacross():
+def create_task_qprf():
 
     if not request.json:
         abort(400)
 
     # DEFAULT VALUES
+    substance_dict = OrderedDict()
     substance_dict = {
     "General" :["Instructions", "This section is aimed at defining the substance for which the (Q)SAR prediction is made."],
     "1.1": ["CAS number", "Report the CAS number."],
@@ -419,12 +420,13 @@ def create_task_readacross():
     representations mentioned above?"]
     }
 
+    general_dict = OrderedDict()
     general_dict = {
     "General" :["Instructions", "General information about the compilation of the current QPRF is provided in this section."],
     "2.1": ["Date of QPRF", "Report the date of compilation of the QPRF. Example: '01 January 2007'."],
     "2.2" : ["QPRF author and contact details", "Report the contact details of the author of the QPRF."]
     }
-    
+    prediction_dict = OrderedDict()
     prediction_dict = {
     "General" :["Instructions", "The information provided in this section will help to facilitate considerations on the \
     scientific validity of the model (as defined in the OECD Principles for the validation of (Q)SAR models) \
@@ -481,6 +483,7 @@ def create_task_readacross():
     structural alerts (e.g. Derek for Windows, OncologicTM) the rationale for the structural alert fired should be provided."],
     }
     
+    adequacy_dict = OrderedDict()
     adequacy_dict = {
     "General" :["Instructions", "The information provided in this section might be useful, depending on the reporting needs \
     and formats of the regulatory framework of interest. \
@@ -592,12 +595,59 @@ def create_task_readacross():
                    "PCA of Query instance vs. Training Dataset" : pcafig_encoded
                    }
         }
-    #task = {}
+    """
+    single = OrderedDict({     "Title" : "QSAR Prediction Reporting Format (QPRF)",
+                               "Version" : 1,
+                               "Date" : time.strftime("%d/%m/%Y"),
+                               "Time" : time.strftime("%H:%M:%S"),
+                               "Disclaimer and Instructions" : "Please fill in the fields of the QPRF with information about the prediction and the substance \
+                               for which the prediction is made. The information that you provide will be used to facilitate \
+                               considerations on the adequacy of the prediction (model result) in relation to a defined \
+                               regulatory purpose. \
+                               The adequacy of a prediction depends on the following conditions: a) the (Q)SAR model is \
+                               scientifically valid: the scientific validity is established according to the OECD principles for \
+                               (Q)SAR validation; b) the (Q)SAR model is applicable to the query chemical: a (Q)SAR is \
+                               applicable if the query chemical falls within the defined applicability domain of the model; c) \
+                               the (Q)SAR result is reliable: a valid (Q)SAR that is applied to a chemical falling within its \
+                               applicability domain provides a reliable result; d) the (Q)SAR model is relevant for the \
+                               regulatory purpose: the predicted endpoint can be used directly or following an \
+                               extrapolation, possibly in combination with other information, for a particular regulatory \
+                               purpose. \
+                               A (Q)SAR prediction (model result) may be considered adequate if it is reliable and relevant, \
+                               and depending on the totality of information available in a weight-of-evidence assessment \
+                               (see Section 4 of the QPRF)."
+                              })
+    multip = OrderedDict({     "1. Substance":
+                                   {"colNames": ["Title", "Value"],
+                                    "values": substance_dict
+                                   },
+                               "2. General information":
+                                   {"colNames": ["Title", "Value"],
+                                    "values": general_dict
+                                   },
+                               "3. Prediction":
+                                   {"colNames": ["Title", "Value"],
+                                    "values": prediction_dict
+                                   },
+                               "4. Adequacy (Optional)":
+                                   {"colNames": ["Title", "Value"],
+                                    "values": adequacy_dict
+                                   }
+                             })
+    figure = OrderedDict({
+                   "PCA of Query instance vs. Training Dataset" : pcafig_encoded
+                   })
+    task = OrderedDict({
+        "singleCalculations": single,
+        "arrayCalculations": multip,
+        "figures": figure
+        })
+    """
     #fff = open("C:/Python27/delete123.txt", "w")
     #fff.writelines(str(task))
     #fff.close 
     #task = {}
-    jsonOutput = jsonify( task )
+    jsonOutput = jsonify( OrderedDict(task) )
     
     return jsonOutput, 201 
 
