@@ -306,22 +306,50 @@ def distances (read_across_datapoints, datapoints, variables, readAcrossURIs, na
     ens_dict = byteify(ens_dict)
 
     ### PLOT PCA
+    #print datapoints_norm, "\n\n\n", RA_datapoints_norm
+
     pcafig = plt.figure()
     ax = pcafig.add_subplot(111, projection='3d')
 
-    pca = decomposition.PCA(n_components=3)
-    pca.fit(datapoints_norm)
-    dt = pca.transform(datapoints_norm)
-    ax.scatter(dt[:,0], dt[:,1], dt[:,2], c='r',  label = 'Original Values')
+    if len(datapoints_norm[0]) >=3:
+        pca = decomposition.PCA(n_components=3)
+        pca.fit(datapoints_norm)
+        dt = pca.transform(datapoints_norm)
+        ax.scatter(dt[:,0], dt[:,1], dt[:,2], c='r',  label = 'Original Values')
 
-    RA_dt = pca.transform(RA_datapoints_norm)
-    ax.scatter(RA_dt[:,0], RA_dt[:,1], RA_dt[:,2], c='b', label = 'Read Across Values')
+        RA_dt = pca.transform(RA_datapoints_norm)
+        ax.scatter(RA_dt[:,0], RA_dt[:,1], RA_dt[:,2], c='b', label = 'QPRF Query Values')
 
-    ax.set_xlabel("1st Principal Component") 
-    ax.set_ylabel("2nd Principal Component")
-    ax.set_zlabel("3rd Principal Component")
-    ax.set_title("3D Projection of Datapoints")
+        ax.set_xlabel("1st Principal Component") 
+        ax.set_ylabel("2nd Principal Component")
+        ax.set_zlabel("3rd Principal Component")
+        ax.set_title("3D Projection of Datapoints")
+    elif len(datapoints_norm[0]) ==2:
+        pca = decomposition.PCA(n_components=2)
+        pca.fit(datapoints_norm)
+        dt = pca.transform(datapoints_norm)
+        ax.scatter(dt[:,0], dt[:,1], c='r',  label = 'Original Values')
+
+        RA_dt = pca.transform(RA_datapoints_norm)
+        ax.scatter(RA_dt[:,0], RA_dt[:,1], c='b', label = 'QPRF Query Values')
+
+        ax.set_xlabel("1st Principal Component") 
+        ax.set_ylabel("2nd Principal Component")
+        ax.set_title("2D Projection of Datapoints")
+    else:
+        pca = decomposition.PCA(n_components=1)
+        pca.fit(datapoints_norm)
+        dt = pca.transform(datapoints_norm)
+        ax.scatter(dt[:,0], c='r',  label = 'Original Values')
+
+        RA_dt = pca.transform(RA_datapoints_norm)
+        ax.scatter(RA_dt[:,0], c='b', label = 'QPRF Query Values')
+
+        ax.set_xlabel("1st Principal Component") 
+        ax.set_title("2D Projection of Datapoints")
+
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
+
 
     #plt.tight_layout()
     #plt.show() #HIDE show on production
