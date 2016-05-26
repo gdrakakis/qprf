@@ -571,7 +571,7 @@ def create_task_qprf():
         prediction_dict["3.2 g."][1] = descriptor_string
 
     if doaALL[0] != "" and doaALL[0] != None and doaALL[1] !="" and doaALL[1] != None:
-        prediction_dict["3.3 a."][1] = "Value: " + str(doaALL[0]) + "for method: " + str(doaALL[1]) + ". Also, please see PCA figure included in this document."
+        prediction_dict["3.3 a."][1] = "Value: " + str(doaALL[0]) + " for method: " + str(doaALL[1]) + ". Also, please see PCA figure included in this document."
 
     if nearest != "":
         prediction_dict["3.3 b."][1] = nearest
