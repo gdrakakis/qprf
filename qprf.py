@@ -71,7 +71,7 @@ def getJsonContentsQPRF (jsonInput):
         for i in range (len(dataEntry)):
             if dataEntry[i]["compound"]["URI"] == substanceURI and predictedFeature in dataEntry[i]["values"]:
                 doaValue = dataEntry[i]["values"][doaURI]
-        doaALL = [str(doaURI)+str(doaValue), doaMethod]
+        doaALL = [doaValue, doaMethod]
         #print "\n\n\n ok \n\n\n"
         substance = {}
         substance["uri"] = substanceURI
@@ -342,7 +342,7 @@ def distances (read_across_datapoints, datapoints, variables, readAcrossURIs, na
     
         plt.xlabel("1st Principal Component" ) 
         plt.ylabel("2nd Principal Component") 
-        plt.title("2D Projection of Datapoints") 
+        #plt.title("2D Projection of Datapoints") 
 
 
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
