@@ -673,7 +673,7 @@ def create_task_qprf():
     #fff = open("C:/Python27/delete123.txt", "w")
     #fff.writelines(str(task))
     #fff.close 
-    task = {}
+    #task = {}
     jsonOutput = jsonify( OrderedDict(task) )
     
     return jsonOutput, 201 
