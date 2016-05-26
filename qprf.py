@@ -52,23 +52,27 @@ def getJsonContentsQPRF (jsonInput):
         dataset = jsonInput["dataset"]
         predictionFeature = jsonInput["predictionFeature"]
         parameters = jsonInput["parameters"]
-
+        #print "\n\n\n ok \n\n\n"
         datasetURI = dataset.get("datasetURI", None)
         dataEntry = dataset.get("dataEntry", None)
         metaInfo = dataset.get("meta", None)
         features = dataset.get("features", None)
-
+        #print "\n\n\n ok \n\n\n"
         qprf_creator = metaInfo["creators"][0]
 
         substanceURI = parameters.get("substanceURI", None) # ID for QPRF
         predictedFeature = parameters.get("predictedFeature", None)
         structures = parameters.get("structures", None)
         algorithm = parameters.get("algorithm", None)
-
+        #print "\n\n\n ok \n\n\n"
         doaURI = parameters.get("doaURI", None)
         doaMethod = parameters.get("doaMethod", None)
-        doaALL = [doaURI, doaMethod]
-
+        print doaURI, "\n\n\n"
+        for i in range (len(dataEntry)):
+            if dataEntry[i]["compound"]["URI"] == substanceURI and predictedFeature in dataEntry[i]["values"]:
+                doaValue = dataEntry[i]["values"][doaURI]
+        doaALL = [str(doaURI)+str(doaValue), doaMethod]
+        #print "\n\n\n ok \n\n\n"
         substance = {}
         substance["uri"] = substanceURI
         substance["inchi"] = structures[0]["Std. InChI"]
@@ -76,7 +80,7 @@ def getJsonContentsQPRF (jsonInput):
         substance["cas"] = structures[0]["CasRN"]
         substance["iupac"] = structures[0]["IUPAC name"]
         substance["reach"] = structures[0]["REACH registration date"]
-
+        #print "\n\n\n ok5 \n\n\n"
         prediction = {}
         for i in range (len(features)):
             if features[i]["uri"] == predictionFeature:
@@ -84,6 +88,7 @@ def getJsonContentsQPRF (jsonInput):
                 break
         prediction["uri"] = predictionFeature
         prediction["model"] = algorithm["meta"]["titles"][0]
+        #print "\n\n\n ok6 \n\n\n"
         for i in range (len(dataEntry)):
             if dataEntry[i]["compound"]["URI"] == substanceURI:
                 if predictedFeature in dataEntry[i]["values"].keys(): 
@@ -92,7 +97,7 @@ def getJsonContentsQPRF (jsonInput):
 
         #prediction["descriptors"] 
                 
-
+        #print "\n\n\n ok7 \n\n\n"
         variables = dataEntry[0]["values"].keys() 
         variables.sort()  # NP features including predictionFeature
 
@@ -104,7 +109,7 @@ def getJsonContentsQPRF (jsonInput):
 
         qprf_datapoints = []
 
-
+        #print "\n\n\n ok8 \n\n\n"
         counter = 0
         for i in range(len(dataEntry)):
 
@@ -117,8 +122,9 @@ def getJsonContentsQPRF (jsonInput):
             elif predictedFeature in dataEntry[i]["values"]:
                 for j in variables:
                     if j != predictedFeature and j!= predictionFeature:
+                        #print dataEntry[i]["values"].get(j), j
                         qprf_datapoints.append(dataEntry[i]["values"].get(j))
-
+        #print variables, "\n\n\n\n"
         variables.remove(predictionFeature) 
 
         variable_names = []
@@ -183,6 +189,7 @@ def mat2dicSingle(matrix):
     Normaliser
 """
 def manual_norm(myTable, myMax, myMin):
+    #print myTable, "\n\n\n", myMax, "\n\n\n", myMin
     if myMax>myMin:
         for i in range (len(myTable)):
             myTable[i] = (myTable[i]-myMin)/(myMax-myMin)
@@ -223,7 +230,7 @@ def distances (read_across_datapoints, datapoints, variables, readAcrossURIs, na
     #RA_datapoints_norm = RA_datapoints_transposed ###
 
     max_eucl_dist = euclidean_distances(term1, term2)
-
+    #print RA_datapoints_norm
     eucl_dist = euclidean_distances(RA_datapoints_norm, datapoints_norm)
     eucl_dist = numpy.array(eucl_dist)
     eucl_dist = eucl_dist/max_eucl_dist
@@ -309,9 +316,9 @@ def distances (read_across_datapoints, datapoints, variables, readAcrossURIs, na
     #print datapoints_norm, "\n\n\n", RA_datapoints_norm
 
     pcafig = plt.figure()
-    ax = pcafig.add_subplot(111, projection='3d')
 
     if len(datapoints_norm[0]) >=3:
+        ax = pcafig.add_subplot(111, projection='3d')
         pca = decomposition.PCA(n_components=3)
         pca.fit(datapoints_norm)
         dt = pca.transform(datapoints_norm)
@@ -324,29 +331,19 @@ def distances (read_across_datapoints, datapoints, variables, readAcrossURIs, na
         ax.set_ylabel("2nd Principal Component")
         ax.set_zlabel("3rd Principal Component")
         ax.set_title("3D Projection of Datapoints")
-    elif len(datapoints_norm[0]) ==2:
+    elif len(datapoints_norm[0]) ==2: ###
         pca = decomposition.PCA(n_components=2)
         pca.fit(datapoints_norm)
         dt = pca.transform(datapoints_norm)
-        ax.scatter(dt[:,0], dt[:,1], c='r',  label = 'Original Values')
-
+        plt.scatter(dt[:,0], dt[:,1], c='r',  label = 'Original Values') 
+    
         RA_dt = pca.transform(RA_datapoints_norm)
-        ax.scatter(RA_dt[:,0], RA_dt[:,1], c='b', label = 'QPRF Query Values')
+        plt.scatter(RA_dt[:,0], RA_dt[:,1], c='b', label = 'QPRF Query Values') 
+    
+        plt.xlabel("1st Principal Component" ) 
+        plt.ylabel("2nd Principal Component") 
+        plt.title("2D Projection of Datapoints") 
 
-        ax.set_xlabel("1st Principal Component") 
-        ax.set_ylabel("2nd Principal Component")
-        ax.set_title("2D Projection of Datapoints")
-    else:
-        pca = decomposition.PCA(n_components=1)
-        pca.fit(datapoints_norm)
-        dt = pca.transform(datapoints_norm)
-        ax.scatter(dt[:,0], c='r',  label = 'Original Values')
-
-        RA_dt = pca.transform(RA_datapoints_norm)
-        ax.scatter(RA_dt[:,0], c='b', label = 'QPRF Query Values')
-
-        ax.set_xlabel("1st Principal Component") 
-        ax.set_title("2D Projection of Datapoints")
 
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
 
@@ -534,9 +531,11 @@ def create_task_qprf():
 
 
     substance, prediction, nanoparticles, datapoints, qprf_datapoints, variables, variable_names, doaALL, qprf_creator = getJsonContentsQPRF(request.json)
-
+    #print datapoints, len(datapoints)
+    #print qprf_datapoints, len(qprf_datapoints)
     ens_sorted, pcafig_encoded = distances ([qprf_datapoints], datapoints, variables, [substance["uri"]], nanoparticles)
-
+    #ens_sorted = [[[1]]]
+    #pcafig_encoded = ""
     nearest = ""
     if len(ens_sorted[0][0]) >3:
         nearest = str(ens_sorted[0][0][0]) + ", " + str(ens_sorted[0][0][1]) + ", " + str(ens_sorted[0][0][2])
@@ -674,7 +673,7 @@ def create_task_qprf():
     #fff = open("C:/Python27/delete123.txt", "w")
     #fff.writelines(str(task))
     #fff.close 
-    #task = {}
+    task = {}
     jsonOutput = jsonify( OrderedDict(task) )
     
     return jsonOutput, 201 
@@ -683,6 +682,6 @@ if __name__ == '__main__':
     app.run(host="0.0.0.0", port = 5000, debug = True)
 
 # curl -i -H "Content-Type: application/json" -X POST -d @C:/Python27/Flask-0.10.1/python-api/qprf.json http://localhost:5000/pws/qprf
-# curl -i -H "Content-Type: application/json" -X POST -d @C:/Python27/Flask-0.10.1/python-api/qprf.json http://localhost:5000/pws/qprf
+# curl -i -H "Content-Type: application/json" -X POST -d @C:/Python27/Flask-0.10.1/python-api/qprf3.json http://localhost:5000/pws/qprf
 # C:\Python27\Flask-0.10.1\python-api 
 # C:/Python27/python qprf.py
