@@ -67,9 +67,10 @@ def getJsonContentsQPRF (jsonInput):
         #print "\n\n\n ok \n\n\n"
         doaURI = parameters.get("doaURI", None)
         doaMethod = parameters.get("doaMethod", None)
-        print doaURI, "\n\n\n"
+        #print doaURI, "\n\n\n"
+        doaValue = None
         for i in range (len(dataEntry)):
-            if dataEntry[i]["compound"]["URI"] == substanceURI and predictedFeature in dataEntry[i]["values"]:
+            if dataEntry[i]["compound"]["URI"] == substanceURI and predictedFeature in dataEntry[i]["values"] and doaURI != None:
                 doaValue = dataEntry[i]["values"][doaURI]
         doaALL = [doaValue, doaMethod]
         #print "\n\n\n ok \n\n\n"
@@ -682,6 +683,6 @@ if __name__ == '__main__':
     app.run(host="0.0.0.0", port = 5000, debug = True)
 
 # curl -i -H "Content-Type: application/json" -X POST -d @C:/Python27/Flask-0.10.1/python-api/qprf.json http://localhost:5000/pws/qprf
-# curl -i -H "Content-Type: application/json" -X POST -d @C:/Python27/Flask-0.10.1/python-api/qprf3.json http://localhost:5000/pws/qprf
+# curl -i -H "Content-Type: application/json" -X POST -d @C:/Python27/Flask-0.10.1/python-api/qprf5.json http://localhost:5000/pws/qprf
 # C:\Python27\Flask-0.10.1\python-api 
 # C:/Python27/python qprf.py
