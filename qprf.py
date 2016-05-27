@@ -105,23 +105,33 @@ def getJsonContentsQPRF (jsonInput):
         datapoints =[] # list of nanoparticle feature vectors not for qprf
         nanoparticles=[] # nanoparticles not substanceURI 
 
-        for i in range(len(dataEntry)-2): ##?
+        subst_ids = 0
+        for i in range(len(dataEntry)):
+            if dataEntry[i]["compound"].get("URI") == substanceURI:
+                subst_ids+=1
+
+        for i in range(len(dataEntry)-subst_ids): ##?
             datapoints.append([])
 
         qprf_datapoints = []
 
         #print "\n\n\n ok8 \n\n\n"
         counter = 0
+        #print len(dataEntry), "\n\n\n"
+        #print len(datapoints), "\n\n\n", datapoints
         for i in range(len(dataEntry)):
-
             if dataEntry[i]["compound"].get("URI") != substanceURI:
+                #print dataEntry[i]["compound"].get("URI")
                 nanoparticles.append(dataEntry[i]["compound"].get("URI"))
                 for j in variables:
+                    print dataEntry[i]["values"].get(j)
                     if j != predictionFeature:
                         datapoints[counter].append(dataEntry[i]["values"].get(j))
+                #print "out"
                 counter+=1
             elif predictedFeature in dataEntry[i]["values"]:
                 for j in variables:
+                    #print j
                     if j != predictedFeature and j!= predictionFeature:
                         #print dataEntry[i]["values"].get(j), j
                         qprf_datapoints.append(dataEntry[i]["values"].get(j))
