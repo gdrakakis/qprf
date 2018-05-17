@@ -32,7 +32,7 @@ import operator
 import matplotlib
 import io
 from io import BytesIO
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot
 import matplotlib.pyplot as plt
 from operator import itemgetter
@@ -124,7 +124,7 @@ def getJsonContentsQPRF (jsonInput):
                 #print dataEntry[i]["compound"].get("URI")
                 nanoparticles.append(dataEntry[i]["compound"].get("URI"))
                 for j in variables:
-                    print dataEntry[i]["values"].get(j)
+                    #print dataEntry[i]["values"].get(j)
                     if j != predictionFeature:
                         datapoints[counter].append(dataEntry[i]["values"].get(j))
                 #print "out"
@@ -240,7 +240,7 @@ def distances (read_across_datapoints, datapoints, variables, readAcrossURIs, na
     RA_datapoints_norm = map(list, zip(*RA_datapoints_transposed))  ###
     #RA_datapoints_norm = RA_datapoints_transposed ###
 
-    max_eucl_dist = euclidean_distances(term1, term2)
+    max_eucl_dist = euclidean_distances([term1], [term2]) ## bug 17 05 2018
     #print RA_datapoints_norm
     eucl_dist = euclidean_distances(RA_datapoints_norm, datapoints_norm)
     eucl_dist = numpy.array(eucl_dist)
@@ -274,7 +274,7 @@ def distances (read_across_datapoints, datapoints, variables, readAcrossURIs, na
             eucl_dict[readAcrossURIs[i] + " NN_" + str(j+1)] = [eucl_sorted[i][0][j], eucl_sorted[i][1][j]]
     eucl_dict = byteify(eucl_dict)
 
-    max_manh_dist = metrics.pairwise.manhattan_distances(term1, term2)
+    max_manh_dist = metrics.pairwise.manhattan_distances([term1], [term2]) ## bug 17 05 2018
     manh_dist = metrics.pairwise.manhattan_distances(RA_datapoints_norm, datapoints_norm)
     manh_dist = numpy.array(manh_dist)
     manh_dist = manh_dist/max_manh_dist
